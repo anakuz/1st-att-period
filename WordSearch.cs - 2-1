@@ -1,0 +1,124 @@
+public class WordSearch
+    {
+        public static void SearchWords(out List<string> words)
+        {
+            string[] split =
+                Helper.strinput.Split(
+                    new[] {"!", ",", ".", ":", ";", ".", "?", " ", "\t", "\n", "\r", "\r\n", "/", "|"},
+                    StringSplitOptions.RemoveEmptyEntries);
+
+            Comparasion comparer = new Comparasion();
+            Dictionary<string, int> dict = new Dictionary<string, int>(comparer);
+
+            foreach (string word in split)
+            {
+                if (dict.ContainsKey(word))
+                    dict[word]++;
+                else dict.Add(word, 1);
+            }
+
+            List<string> keys = new List<string>(dict.Keys);
+            List<int> values = new List<int>(dict.Values);
+            words = new List<string>();
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                if (values[i] == 1)
+                    words.Add(keys[i]);
+            }
+
+            if (words.Count != 0)
+                words.Sort(AlphabetSort);
+            //else return null;
+        }
+        
+        private  static char[] Vowels = new[]
+        {
+            'e', 'y', 'u', 'i', 'o', 'a', 'E', 'Y', 'U', 'I', 'O', 'A', 'у', 'е', 'а', 'о', 'э', 'я', 'и', 'ё', 'ы',
+            'ю', 'У', 'Е', 'А', 'О', 'Э', 'Я', 'И', 'Ё', 'Ы', 'Ю'
+        };
+
+        private static int AlphabetSort(string x, string y)
+        {
+            var xfirst = Vowels.Contains(x.First());
+            var yfirst = Vowels.Contains(y.First());
+
+            return
+                Comparer<bool>.Default.Compare(xfirst, yfirst);
+        }
+    }
+
+    internal static class Helper
+    {
+        internal static string strinput;
+
+        public static string OpenFile(string filename)
+        {
+            StreamReader input = null;
+
+            try
+            {
+                input = new StreamReader(filename, Encoding.GetEncoding(1251));
+                strinput = input.ReadToEnd();
+                input.Close();
+                return strinput;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            finally
+            {
+                input?.Close();
+            }
+        }
+
+        public static void SaveFile(List<string> wordlist, string filename)
+        {
+            StreamWriter output = null;
+
+            try
+            {
+                output = new StreamWriter(filename, false);
+
+                if (wordlist != null)
+                {
+                    foreach (var word in wordlist)
+                    {
+                        output.Write(word + Environment.NewLine);
+                    }
+                }
+                else output.Write("No words were found!");
+
+                output.Close();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            finally
+            {
+                output?.Close();
+            }
+        }
+
+        public static void ShowMsg(string message)
+        {
+            MessageBox.Show(message, @"No file was found!");
+        }
+    }
+
+    internal class Comparasion : IEqualityComparer<string>
+    {
+        public bool Equals(string word1, string word2)
+        {
+            if (word1.ToLower().Equals(word2.ToLower()))
+                return true;
+            else return false;
+        }
+
+        public int GetHashCode(string word)
+        {
+            return word.ToLower().GetHashCode();
+        }
+    }
