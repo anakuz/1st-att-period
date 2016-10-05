@@ -1,0 +1,62 @@
+public partial class Form1 : Form
+    {
+        private List<string> originaList;
+        private List<string> resultingList;
+        OpenFileDialog opnfd = new OpenFileDialog();
+        OpenFileDialog svfd = new OpenFileDialog();
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button_open_Click(object sender, EventArgs e)
+        {
+            if (opnfd.ShowDialog() == DialogResult.OK)
+            {
+                //string open = Helper.OpenFile(opnfd.FileName);
+                //if (open == null)
+                //Helper.ShowMsg(ex.Message);
+
+                try
+                {
+                    string open = Helper.OpenFile(opnfd.FileName);
+                    textBox_input.Text = open;
+
+                    originaList = new List<string>();
+                    resultingList = new List<string>();
+                    WordSearch.SearchWords(out originaList);
+                    resultingList = originaList;
+
+                    try
+                    {
+                        foreach (var result in resultingList)
+                        {
+                            textBox_output.Text += result + Environment.NewLine;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Helper.ShowMsg(ex.Message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Helper.ShowMsg(ex.Message);
+                }
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button_save_Click(object sender, EventArgs e)
+        {
+            if (svfd.ShowDialog() == DialogResult.OK)
+            {
+                Helper.SaveFile(resultingList, svfd.FileName);
+            }
+        }
+    }
