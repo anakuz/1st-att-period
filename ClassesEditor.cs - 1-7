@@ -1,0 +1,90 @@
+internal class ClassesEditor
+    {
+        private readonly BindingList<Class> _classes = new BindingList<Class>();
+        private Class _class;
+        public IEnumerable Classes { get { return _classes; } }
+        public Class Class { get { return _class; } }
+
+        public void AddClass(string name) { _classes.Add(new Class(name)); }
+
+        public void SetEditingClass(int idxClass) { _class = _classes[idxClass]; }
+    }
+
+    internal class Class
+    {
+        private readonly string _name;
+        private readonly List<Member> _members = new List<Member>();
+
+        public Class(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new Exception("incorrrect name");
+            _name = name;
+        }
+
+        public void AddField(Accessor accessor) { _members.Add(new Field(_members.OfType<Field>().Count(), accessor)); }
+        public void AddMethod(Accessor accessor) { _members.Add(new Method(_members.OfType<Method>().Count(), accessor)); }
+
+        public string GetText()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("class {0} : Object {{", _name);
+            sb.AppendLine();
+            foreach (var member in _members)
+                sb.AppendLine(member.GetText());
+            sb.Append("}");
+            return sb.ToString();
+        }
+        public override string ToString() { return _name; }
+    }
+
+
+
+
+
+
+
+
+
+
+    internal class Method : Member
+    {
+        public Method(int count, Accessor accessor) : base(string.Format("Method{0}", count), accessor) { }
+        public override string GetText() { return string.Format(@"{0} void {1} {{ }}", AccessorText, Name); }
+    }
+
+    internal class Field : Member
+    {
+        public Field(int count, Accessor accessor) : base(string.Format("Field{0}", count), accessor) { }
+        public override string GetText() { return string.Format("{0} int _{1};", AccessorText, Name); }
+    }
+
+    internal abstract class Member
+    {
+        public string Name { get; private set; }
+        public Accessor Accessor { get; private set; }
+
+        protected string AccessorText
+        {
+            get
+            {
+                switch (Accessor)
+                {
+                    case Accessor.Public:
+                        return "public";
+                    case Accessor.Private:
+                        return "private";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        protected Member(string name, Accessor accessor)
+        {
+            Name = name;
+            Accessor = accessor;
+        }
+
+        public abstract string GetText();
+    }
