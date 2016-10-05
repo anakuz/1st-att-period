@@ -1,0 +1,75 @@
+public partial class Form1 : Form
+    {
+        private readonly ClassesEditor _editor = new ClassesEditor();
+
+
+        public Form1()
+        {
+            InitializeComponent();
+            comboBox_Classes.DataSource = _editor.Classes;
+            comboBox_accessor.DataSource = typeof (Accessor).GetEnumValues();
+        }
+
+        private void button_addClass_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _editor.AddClass(textBox_className.Text);
+            }
+            catch (Exception ex)
+            {
+                Helper.ShowMsg(ex.Message);
+            }
+        }
+        private void button_addField_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                _editor.Class.AddField((Accessor)comboBox_accessor.SelectedItem);
+                UpdateClassText();
+            }
+            catch (Exception ex)
+            {
+                Helper.ShowMsg(ex.Message);
+            }
+        }
+
+        private void button_addMethod_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                _editor.Class.AddMethod((Accessor)comboBox_accessor.SelectedItem);
+                UpdateClassText();
+            }
+            catch (Exception ex)
+            {
+                Helper.ShowMsg(ex.Message);
+            }
+        }
+
+      
+
+        private void comboBox_Classes_SelectedValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                _editor.SetEditingClass(comboBox_Classes.SelectedIndex);
+                UpdateClassText();
+            }
+            catch (Exception ex)
+            {
+                Helper.ShowMsg(ex.Message);
+            }
+        }
+
+        private void UpdateClassText() { richTextBox_classEditor.Text = _editor.Class.GetText(); }
+    }
+
+    public enum Accessor { Public, Private }
+
+    internal class Helper
+    {
+        public static void ShowMsg(string message) { MessageBox.Show(message, @"Error"); }
+    }
