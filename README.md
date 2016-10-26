@@ -1,2 +1,2 @@
 # 1st-att-period
-all kinds of study stuff
+all kinds of university stuff
